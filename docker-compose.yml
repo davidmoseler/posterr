@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - posterr-psql-data:/var/lib/postgresql/data
+    env_file:
+      ".env"
+    restart: always
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/rails
+    environment:
+      RAILS_ENV: development
+    ports:
+      - 3000:3000
+    command: >
+      ./bin/rails server -b 0.0.0.0
+    depends_on:
+      - db
+    env_file:
+      ".env"
+    restart: always
+
+volumes:
+  posterr-psql-data:
