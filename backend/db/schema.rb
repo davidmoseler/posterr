@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_02_105801) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_02_112015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,8 +29,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_02_105801) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_users_on_name", unique: true
     t.check_constraint "name::text <> ''::text", name: "username_not_empty"
-    t.check_constraint "name::text ~ '^[a-zA-Z0-9]*$'::text", name: "username_alphanumeric_check"
+    t.check_constraint "name::text ~ '^[a-zA-Z0-9\\ ]*$'::text", name: "username_alphanumeric_check"
   end
 
   add_foreign_key "posts", "users"

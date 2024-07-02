@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do
-  before(:all) do
+  before(:each) do
     @user = User.new name: "John Doe"
     @user.save!
   end

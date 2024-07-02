@@ -1,6 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  context "can be created with alphanumeric name: " do
+    ["John Doe", "Garfield", "Test123", "0"].each do |name|
+      it "'#{name}'" do
+        @user = User.new name: name
+        expect(@user).to be_valid
+        expect{@user.save!}.to_not raise_error
+      end
+    end
+  end
+
   context "name cannot be empty. " do
     before(:all) do
       @user = User.new name: ""
@@ -29,16 +39,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  context "can be created with alphanumeric name: " do
-    ["Garfield", "Test123", "0"].each do |name|
-      it "'#{name}'" do
-        user = User.new name: name
-        expect{user.save(validate: false)}.to_not raise_error
-        expect(user).to be_valid
-      end
-    end
-  end
-
   context "cannot have a non-alphanumeric name. " do
     ["%", "Test.123", "0_0"].each do |name|
       before(:all) do
@@ -53,5 +53,13 @@ RSpec.describe User, type: :model do
         expect(@user).to_not be_valid
     end
     end
+  end
+
+  it "name should be unique" do
+    @user = User.new name: "John Doe"
+    @other_user = User.new name: "John Doe"
+
+    @user.save!
+    expect{@other_user.save!}.to raise_error(ActiveRecord::StatementInvalid)
   end
 end
