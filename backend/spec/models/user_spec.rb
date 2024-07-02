@@ -62,4 +62,38 @@ RSpec.describe User, type: :model do
     @user.save!
     expect{@other_user.save!}.to raise_error(ActiveRecord::StatementInvalid)
   end
+
+  it "should implement #posts" do
+    @user = User.new name: "John Doe"
+    @user.save!
+
+    expect(@user.posts.length).to equal(0)
+
+    5.times do
+      post = Post.new(content: "A", user: @user)
+      post.save!
+    end
+    expect(@user.posts.length).to equal(5)
+  end
+
+  it "should implement #posts_today" do
+    @user = User.new name: "John Doe"
+    @user.save!
+
+    expect(@user.posts.length).to equal(0)
+
+    travel_to(Date.yesterday) do
+      3.times do
+        post = Post.new(content: "A", user: @user)
+        post.save!
+      end
+    end
+
+    5.times do
+      post = Post.new(content: "A", user: @user)
+      post.save!
+    end
+    expect(@user.posts.length).to equal(8)
+    expect(@user.posts_today.length).to equal(5)
+  end
 end
