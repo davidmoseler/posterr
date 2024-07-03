@@ -25,24 +25,10 @@ class PostService
   end
 
   def get_posts(page, search_term: nil, sorting: "latest", base_query: Post)
-    query = base_query
-
-    if not ["latest", "trending"].include?(sorting)
-      raise PostServiceException::InvalidParams
-    end
-
-    query = query.send(sorting.to_sym)
-
-    if not search_term.nil?
-      query = query.search(search_term)
-    end
-
-    if page == 1
-      query = query.page(page).per(15)
-    else
-      query = query.page(page-1).per(20).padding(15)
-    end
-    return query
+    query = sort(base_query, sorting)
+    query = filter(query, search_term)
+    query = paginate(query, page)
+    query
   end
 
   def repost(post)
@@ -58,6 +44,26 @@ class PostService
   def check_allowed
     if @user.posts_today.length >= 5
       raise PostServiceException::RateLimit
+    end
+  end
+
+  def sort(query, sorting)
+    if not ["latest", "trending"].include?(sorting)
+      raise PostServiceException::InvalidParams
+    end
+
+    query.send(sorting.to_sym)
+  end
+
+  def filter(query, search_term)
+    if search_term.nil? then query else query.search(search_term) end
+  end
+
+  def paginate(query, page)
+    if page == 1 then
+      query.page(page).per(15)
+    else
+      query.page(page-1).per(20).padding(15)
     end
   end
 
