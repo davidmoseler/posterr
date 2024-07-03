@@ -49,3 +49,5 @@ end
 gem "pg", "~> 1.5"
 
 gem "rspec-rails", "~> 6.1"
+
+gem "kaminari", "~> 1.2"

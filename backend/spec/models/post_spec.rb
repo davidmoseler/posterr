@@ -14,7 +14,7 @@ RSpec.describe Post, type: :model do
   end
 
   context "content cannot be empty. " do
-    before(:all) do
+    before(:each) do
       @post = Post.new content: "", user: @user
     end
 
@@ -28,7 +28,7 @@ RSpec.describe Post, type: :model do
   end
 
   context "content cannot be null. " do
-    before(:all) do
+    before(:each) do
       @post = Post.new user: @user
     end
 
@@ -42,7 +42,7 @@ RSpec.describe Post, type: :model do
   end
 
   context "content cannot exceed 777 characters. " do
-    before(:all) do
+    before(:each) do
       content = "a" * 778
       @post = Post.new user: @user, content: content
     end
@@ -53,6 +53,37 @@ RSpec.describe Post, type: :model do
 
     it "Should not be validated with over 777 characters" do
       expect(@post).to_not be_valid
+    end
+  end
+
+  context "When filtering results using keywords, " do
+    before(:each) do
+      Post.create! user: @user, content: "Search for this"
+      Post.create! user: @user, content: "I will search for this"
+      Post.create! user: @user, content: "Let's try. Search for this."
+      Post.create! user: @user, content: "Search fuzzy for this."
+
+      @posts = Post.search("Search for this")
+    end
+
+    it "exact matches for post content are expected" do
+      expect(@posts).to include(
+        an_object_having_attributes(content: "Search for this")
+      )
+
+      expect(@posts).to include(
+        an_object_having_attributes(content: "Let's try. Search for this.")
+      )
+    end
+
+    it "non-exact matches for post content are not expected" do
+      expect(@posts).not_to include(
+        an_object_having_attributes(content: "I will search for this")
+      )
+
+      expect(@posts).not_to include(
+        an_object_having_attributes(content: "Search fuzzy for this")
+      )
     end
   end
 end
