@@ -63,7 +63,7 @@ RSpec.describe Post, type: :model do
       Post.create! user: @user, content: "Let's try. Search for this."
       Post.create! user: @user, content: "Search fuzzy for this."
 
-      @posts = Post.search("Search for this")
+      @posts = Post.table.search("Search for this").execute
     end
 
     it "exact matches for post content are expected" do
@@ -84,6 +84,38 @@ RSpec.describe Post, type: :model do
       expect(@posts).not_to include(
         an_object_having_attributes(content: "Search fuzzy for this")
       )
+    end
+
+  end
+
+  describe "#table" do
+    it "returns a query" do
+      expect{Post.table.order(:created_at)}.not_to raise_error
+    end
+
+    context "has only posts" do
+      before(:each) do
+        @post = Post.create! user: @user, content: "Hello"
+      end
+
+      it "returns the posts" do
+        expect(Post.table.length).to eq(1)
+      end
+    end
+
+    context "has both posts and reposts" do
+      before(:each) do
+        @post = Post.create! user: @user, content: "Hello"
+        Repost.create! user: @user, post: @post
+      end
+
+      it "returns both posts and reposts" do
+        expect(Post.table.length).to eq(2)
+      end
+
+      it "returns only posts and not reposts if a filter is applied" do
+        expect(Post.table.search("Hello").length).to eq(1)
+      end
     end
   end
 end

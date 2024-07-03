@@ -12,12 +12,12 @@ RSpec.describe PostService do
       allow(@service).to receive(:save_post)
     end
 
-    context "When it has no posts" do
+    context "When the user has no posts" do
       before(:each) do
         @service.create_post("Hello")
       end
 
-      it "Should save a new post" do
+      it "it should save a new post" do
         expect(@service).to have_received(:save_post).with(
           an_object_having_attributes(
             :content => "Hello"
@@ -25,7 +25,7 @@ RSpec.describe PostService do
         )
       end
 
-      it "Should belong to the correct user" do
+      it "the created post should belong to the correct user" do
         expect(@service).to have_received(:save_post).with(
           an_object_having_attributes(
             :user => @user
@@ -130,15 +130,72 @@ RSpec.describe PostService do
           an_object_having_attributes(content: "Search fuzzy for this")
         )
       end
-
-      it "original posts are expected" do
-      end
-
-      it "reposts are not expected" do
-      end
     end
   end
 
   describe "#repost" do
+    before(:each) do
+      @other_user = User.new
+      @yet_another_user = User.new
+    end
+
+    context "When an original post belongs to the user" do
+      before(:each) do
+        @post = Post.new user: @user, content: "Hello"
+      end
+
+      it "that user shouldn't be able to repost" do
+        expect{@service.repost(@post)}.to raise_error PostServiceException::RepostOwnPost
+      end
+    end
+
+    context "When an original post has no reposts" do
+      before(:each) do
+        @post = Post.new user: @other_user, content: "Hello"
+
+        allow(@service).to receive(:save_repost)
+      end
+
+      it "it should be possible for the user to repost" do
+        @service.repost(@post)
+
+        expect(@service).to have_received(:save_repost).with(
+          an_object_having_attributes(
+            :post => @post,
+            :user => @user
+          )
+        )
+      end
+    end
+
+    context "When another user has reposted that original post" do
+      before(:each) do
+        @post = Post.new user: @other_user, content: "Hello"
+        @repost = Repost.new user: @yet_another_user, post: @post
+
+        allow(@service).to receive(:save_repost)
+      end
+
+      it "it should still be possible for the user to repost" do
+        @service.repost(@post)
+
+        expect(@service).to have_received(:save_repost).with(
+          an_object_having_attributes(
+            :post => @post,
+            :user => @user
+          )
+        )
+      end
+    end
+
+    context "When a post is a repost" do
+      before(:each) do
+        @post = Repost.new user: @user, post: @post
+      end
+
+      it "it should not be possible for the user to repost again" do
+        expect{@service.repost(@post)}.to raise_error PostServiceException::RepostRepost
+      end
+    end
   end
 end
