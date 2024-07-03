@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Post from './Post';
+import user from "../types/user";
+import post from "../types/post";
 
-interface post {
-  content: string;
-  author: string;
-  datetime: string;
-}
-
-const Feed = () => {
+const Feed = ({currentUser} : {currentUser : user}) => {
   const [posts, setPosts] = useState<post[]>([]);
   const [newPostContent, setNewPostContent] = useState<string>('');
 
   const createPost = () => {
     setPosts([
       ...posts,
-      { content: newPostContent, author: 'Me', datetime: 'Now' },
+      { content: newPostContent, author: currentUser.name, datetime: 'Now' },
     ]);
     setNewPostContent("");
   };
@@ -25,10 +21,6 @@ const Feed = () => {
       createPost();
     }
   };
-
-  useEffect(() => {
-    setPosts([{ content: 'Oi', author: 'David', datetime: 'Today' }]);
-  }, []);
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
@@ -56,7 +48,7 @@ const Feed = () => {
       </div>
       <div>
         {posts.map((post) => (
-          <Post content={post.content} />
+          <Post author={post.author} content={post.content} />
         ))}
       </div>
     </div>

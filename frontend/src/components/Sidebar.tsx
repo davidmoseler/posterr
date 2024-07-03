@@ -1,15 +1,26 @@
 import React from 'react';
+import user from '../types/user';
 
-const Sidebar = () => {
+const Sidebar = ({
+  users,
+  currentUser,
+  setCurrentUser,
+}: {
+  users: user[];
+  currentUser: user;
+  setCurrentUser: Function;
+}) => {
   return (
     <div className="flex flex-col w-80 h-screen p-4 bg-white border-r border-gray-200">
       <div className="space-y-4"></div>
-      {/* <button className="p-2 bg-blue-500 text-white rounded">Home</button>
-      <button className="p-2 bg-gray-100 rounded">Explore</button>
-      <button className="p-2 bg-gray-100 rounded">Notifications</button>
-      <button className="p-2 bg-gray-100 rounded">Messages</button>
-      <button className="p-2 bg-gray-100 rounded">Bookmarks</button>
-      <button className="p-2 bg-gray-100 rounded">Profile</button> */}
+      {users.map((u) => (
+        <button
+          onClick={() => setCurrentUser(u)}
+          className={'p-2 rounded' + (u.id === currentUser.id ? ' font-bold' : '')}
+        >
+          {u.name}
+        </button>
+      ))}
     </div>
   );
 };
