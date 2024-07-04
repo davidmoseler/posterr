@@ -9,16 +9,20 @@ class Post < ApplicationRecord
   def self.feed
     PostFeed.new union(
       Post.all.select(
-        %{content,
+        %{posts.id as post_id,
+        content,
         user_id,
         created_at,
+        n_reposts,
         FALSE as is_repost,
         NULL as reposter_id}
       ),
       Repost.all.joins(:post).select(
-        %{posts.content,
+        %{reposts.id as post_id,
+        posts.content,
         posts.user_id,
         reposts.created_at,
+        posts.n_reposts,
         TRUE as is_repost,
         reposts.user_id as reposter_id}
       )

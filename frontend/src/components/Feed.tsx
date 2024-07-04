@@ -88,11 +88,6 @@ const Feed = () => {
     }
   };
 
-  const getUserName = (user_id: string) => {
-    const user = users.find((u:any) => u.id == user_id);
-    return user ? user.name : '';
-  };
-
   const mergePages = (pages: any) => {
     const posts: any = [];
     pages.forEach((p: any) => {
@@ -141,7 +136,7 @@ const Feed = () => {
       </div>
       <div>
         {posts.map((post: post) => (
-          <Post author={getUserName(post.user_id)} content={post.content} />
+          <Post post={post} />
         ))}
       </div>
       <button
