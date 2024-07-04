@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useInView } from 'react-intersection-observer';
 import {
   useInfiniteQuery,
@@ -9,9 +10,22 @@ import Post from './Post';
 import user from '../types/user';
 import post from '../types/post';
 
-async function getPosts(user_id: string, page: number) {
+async function getPosts(
+  user_id: string,
+  page: number,
+  searchTerm: string,
+  sorting: string
+) {
   const response = await fetch(
-    'http://localhost:5000/post/get_posts?page=' + page + '&user_id=' + user_id,
+    'http://localhost:5000/post/get_posts?' +
+      'page=' +
+      page +
+      '&user_id=' +
+      user_id +
+      '&search_term=' +
+      searchTerm +
+      '&sorting=' +
+      sorting,
     {
       headers: {
         'Content-Type': 'application/json',
@@ -25,6 +39,9 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
   const [ref, inView] = useInView();
   const queryClient = useQueryClient();
 
+  const searchTerm = useSelector((state: any) => state.search.value);
+  const sorting = useSelector((state: any) => state.sorting.value);
+
   const {
     data,
     fetchNextPage,
@@ -36,7 +53,8 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
     isFetchingPreviousPage,
   } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: ({ pageParam }) => getPosts(currentUser.id, pageParam),
+    queryFn: ({ pageParam }) =>
+      getPosts(currentUser.id, pageParam, searchTerm, sorting),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     getPreviousPageParam: (firstPage) => firstPage.previousPage,
@@ -76,7 +94,6 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
   const mergePages = (pages: any) => {
     const posts: any = [];
     pages.forEach((p: any) => {
-      console.log(p)
       p.data.forEach((post: any) => posts.push(post));
     });
     return posts;
@@ -89,6 +106,10 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
       fetchNextPage();
     }
   }, [inView]);
+
+  useEffect(() => {
+    queryClient.resetQueries({ queryKey: ['posts'], exact: true });
+  }, [searchTerm, sorting]);
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
