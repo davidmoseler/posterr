@@ -29,8 +29,8 @@ class PostController < ApplicationController
 
   def get_posts_params
     hsh = {}
-    hsh[:search_term] = params[:search_term] if params[:search_term]
-    hsh[:sorting] = params[:sorting] if params[:sorting]
+    hsh[:search_term] = params[:search_term] unless params[:search_term].blank?
+    hsh[:sorting] = params[:sorting] unless params[:sorting].blank?
     hsh
   end
 end

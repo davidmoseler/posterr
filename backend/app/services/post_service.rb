@@ -57,7 +57,7 @@ class PostService
   end
 
   def filter(query, search_term)
-    if search_term.nil?
+    if search_term.blank?
       query
     else
       query = query.original
