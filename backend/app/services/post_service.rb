@@ -41,7 +41,7 @@ class PostService
   end
 
   def base_query
-    Post.table
+    Post.feed
   end
 
   def sort(query, sorting)

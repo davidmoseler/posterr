@@ -1,18 +1,18 @@
-class PostTimeline
+class PostFeed
   def initialize(query)
     @query = query
   end
 
   def latest
-    PostTimeline.new @query.order(:created_at)
+    PostFeed.new @query.order(:created_at)
   end
 
   def trending
-    PostTimeline.new @query.order(:n_reposts)
+    PostFeed.new @query.order(:n_reposts)
   end
 
   def search(string)
-    PostTimeline.new @query.where(
+    PostFeed.new @query.where(
       'content LIKE ?', "%#{ string }%"
     ).where(is_repost: false)
   end
@@ -24,7 +24,7 @@ class PostTimeline
   def method_missing(m, *args, &block)
     res = @query.send(m, *args, &block)
     if(res.is_a? Enumerable)
-      PostTimeline.new res
+      PostFeed.new res
     else
       res
     end
