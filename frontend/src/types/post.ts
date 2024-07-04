@@ -1,6 +1,6 @@
 interface post {
   content: string;
-  author: string;
+  user_id: string;
   datetime: string;
 }
 

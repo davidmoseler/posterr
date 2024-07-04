@@ -1,25 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import Post from './Post';
-import user from "../types/user";
-import post from "../types/post";
+import user from '../types/user';
+import post from '../types/post';
 
-const Feed = ({currentUser} : {currentUser : user}) => {
-  const [posts, setPosts] = useState<post[]>([]);
+async function getPosts(user_id: string) {
+  const response = await fetch(
+    'http://localhost:5000/post/get_posts?page=1&user_id=' + user_id,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.json();
+}
+
+const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['posts'],
+    queryFn: () => getPosts(currentUser.id),
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      fetch('http://localhost:5000/post/create_post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: currentUser.id,
+          content: newPostContent,
+        }),
+      }),
+    onSuccess: () => {
+      setNewPostContent('');
+      refetch();
+    },
+  });
   const [newPostContent, setNewPostContent] = useState<string>('');
-
-  const createPost = () => {
-    setPosts([
-      ...posts,
-      { content: newPostContent, author: currentUser.name, datetime: 'Now' },
-    ]);
-    setNewPostContent("");
-  };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      createPost();
+      mutate();
     }
+  };
+
+  const getUserName = (user_id: string) => {
+    const user = users.find((u) => u.id == user_id);
+    return user ? user.name : '';
   };
 
   return (
@@ -40,15 +71,17 @@ const Feed = ({currentUser} : {currentUser : user}) => {
               (newPostContent.length ? 'bg-blue-400' : 'bg-blue-200') +
               ' text-white w-16 h-9 rounded-3xl'
             }
-            onClick={createPost}
+            onClick={() => {
+              mutate();
+            }}
           >
             Post
           </button>
         </div>
       </div>
       <div>
-        {posts.map((post) => (
-          <Post author={post.author} content={post.content} />
+        {data?.map((post: post) => (
+          <Post author={getUserName(post.user_id)} content={post.content} />
         ))}
       </div>
     </div>
