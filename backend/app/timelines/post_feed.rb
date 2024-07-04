@@ -4,11 +4,11 @@ class PostFeed
   end
 
   def latest
-    PostFeed.new @query.order(:created_at)
+    PostFeed.new @query.order(created_at: :desc)
   end
 
   def trending
-    PostFeed.new @query.order(:n_reposts)
+    PostFeed.new @query.order(n_reposts: :desc)
   end
 
   def search(string)
