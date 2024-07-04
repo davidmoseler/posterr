@@ -6,8 +6,13 @@ class PostController < ApplicationController
   end
 
   def get_posts
-    posts = @post_service.get_posts(params[:page].to_i, **get_posts_params)
-    render :json => posts.execute
+    page = params[:page].to_i
+    posts = @post_service.get_posts(page, **get_posts_params)
+    n_pages = 1 + (posts.length-10)/15
+    render :json => {
+      data: posts.execute,
+      nextPage: page+1 > n_pages ? page+1 : nil
+    }
   end
 
   def repost

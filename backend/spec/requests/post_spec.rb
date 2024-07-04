@@ -20,7 +20,7 @@ RSpec.describe "Posts", type: :request do
 
       get "/post/get_posts", :params => { user_id: @user.id, page: 1 }
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body).length).to be(3)
+      expect(JSON.parse(response.body)['data'].length).to eq(3)
     end
   end
 
