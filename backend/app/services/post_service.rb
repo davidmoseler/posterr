@@ -49,11 +49,20 @@ class PostService
       raise PostServiceException::InvalidParams
     end
 
+    if sorting == "trending"
+      query = query.original
+    end
+
     query.send(sorting.to_sym)
   end
 
   def filter(query, search_term)
-    if search_term.nil? then query else query.search(search_term) end
+    if search_term.nil?
+      query
+    else
+      query = query.original
+      query.search(search_term)
+    end
   end
 
   def paginate(query, page)

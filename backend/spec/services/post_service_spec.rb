@@ -53,8 +53,10 @@ RSpec.describe PostService do
 
       def @all_posts.latest; end
       def @all_posts.trending; end
+      def @all_posts.original; end
       allow(@all_posts).to receive(:latest).and_return(@all_posts)
       allow(@all_posts).to receive(:trending).and_return(@all_posts)
+      allow(@all_posts).to receive(:original).and_return(@all_posts)
     end
 
     it "Should return 15 posts on page 1" do
@@ -83,6 +85,10 @@ RSpec.describe PostService do
       it "posts should be sorted in descending order of creation date" do
         expect(@all_posts).to have_received(:latest)
       end
+
+      it "returns both posts and reposts" do
+        expect(@all_posts).to_not have_received(:original)
+      end
     end
 
     context "When sorting by trending, " do
@@ -92,6 +98,10 @@ RSpec.describe PostService do
 
       it "posts should be sorted in descending order of number of reposts" do
         expect(@all_posts).to have_received(:trending)
+      end
+
+      it "returns only posts and not reposts" do
+        expect(@all_posts).to have_received(:original)
       end
     end
 
@@ -129,6 +139,10 @@ RSpec.describe PostService do
         expect(@posts).not_to include(
           an_object_having_attributes(content: "Search fuzzy for this")
         )
+      end
+
+      it "returns only posts and not reposts" do
+        expect(@all_posts).to have_received(:original)
       end
     end
   end

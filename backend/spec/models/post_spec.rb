@@ -112,10 +112,6 @@ RSpec.describe Post, type: :model do
       it "returns both posts and reposts" do
         expect(Post.feed.length).to eq(2)
       end
-
-      it "returns only posts and not reposts if a filter is applied" do
-        expect(Post.feed.search("Hello").length).to eq(1)
-      end
     end
   end
 end

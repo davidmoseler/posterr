@@ -14,7 +14,11 @@ class PostFeed
   def search(string)
     PostFeed.new @query.where(
       'content LIKE ?', "%#{ string }%"
-    ).where(is_repost: false)
+    )
+  end
+
+  def original
+    PostFeed.new @query.where(is_repost: false)
   end
 
   def execute
