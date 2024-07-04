@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  useMutation,
+} from '@tanstack/react-query';
 import Post from './Post';
 import user from '../types/user';
 import post from '../types/post';
 
-async function getPosts(user_id: string) {
+async function getPosts(user_id: string, page: number) {
   const response = await fetch(
-    'http://localhost:5000/post/get_posts?page=1&user_id=' + user_id,
+    'http://localhost:5000/post/get_posts?page=' + page + '&user_id=' + user_id,
     {
       headers: {
         'Content-Type': 'application/json',
@@ -17,9 +22,24 @@ async function getPosts(user_id: string) {
 }
 
 const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
-  const { data, isLoading, refetch } = useQuery({
+  const [ref, inView] = useInView();
+  const queryClient = useQueryClient();
+
+  const {
+    data,
+    fetchNextPage,
+    fetchPreviousPage,
+    hasNextPage,
+    hasPreviousPage,
+    isFetching,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+  } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: () => getPosts(currentUser.id),
+    queryFn: ({ pageParam }) => getPosts(currentUser.id, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getPreviousPageParam: (firstPage) => firstPage.previousPage,
   });
 
   const { mutate } = useMutation({
@@ -36,7 +56,7 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
       }),
     onSuccess: () => {
       setNewPostContent('');
-      refetch();
+      queryClient.resetQueries({ queryKey: ['posts'], exact: true });
     },
   });
   const [newPostContent, setNewPostContent] = useState<string>('');
@@ -52,6 +72,23 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
     const user = users.find((u) => u.id == user_id);
     return user ? user.name : '';
   };
+
+  const mergePages = (pages: any) => {
+    const posts: any = [];
+    pages.forEach((p: any) => {
+      console.log(p)
+      p.data.forEach((post: any) => posts.push(post));
+    });
+    return posts;
+  };
+
+  const posts = data ? mergePages(data.pages) : [];
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   return (
     <div className="flex-1 p-4 overflow-y-auto">
@@ -80,10 +117,21 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
         </div>
       </div>
       <div>
-        {data?.map((post: post) => (
+        {posts.map((post: post) => (
           <Post author={getUserName(post.user_id)} content={post.content} />
         ))}
       </div>
+      <button
+        ref={ref}
+        disabled={!hasNextPage || isFetchingNextPage}
+        onClick={() => fetchNextPage()}
+      >
+        {isFetchingNextPage
+          ? 'Fetching next page'
+          : hasNextPage
+          ? 'Fetch More Data'
+          : 'No more posts'}
+      </button>
     </div>
   );
 };
