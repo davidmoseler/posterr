@@ -35,10 +35,12 @@ async function getPosts(
   return response.json();
 }
 
-const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
+const Feed = () => {
   const [ref, inView] = useInView();
   const queryClient = useQueryClient();
 
+  const users = useSelector((state: any) => state.user.users);
+  const currentUser = useSelector((state: any) => state.user.currentUser);
   const searchTerm = useSelector((state: any) => state.search.value);
   const sorting = useSelector((state: any) => state.sorting.value);
 
@@ -87,7 +89,7 @@ const Feed = ({ users, currentUser }: { users: user[]; currentUser: user }) => {
   };
 
   const getUserName = (user_id: string) => {
-    const user = users.find((u) => u.id == user_id);
+    const user = users.find((u:any) => u.id == user_id);
     return user ? user.name : '';
   };
 

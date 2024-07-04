@@ -11,15 +11,6 @@ import user from './types/user';
 const queryClient = new QueryClient();
 
 const App = () => {
-  const users: user[] = [
-    { id: '1', name: 'Me' },
-    { id: '2', name: 'John Doe' },
-    { id: '3', name: 'Robert Denzer' },
-    { id: '4', name: 'Sheila Doe' },
-  ];
-
-  const [currentUser, setCurrentUser] = useState<user>(users[0]);
-
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
@@ -27,13 +18,9 @@ const App = () => {
           <div className="flex">
             <div className="flex flex-col">
               <Navbar />
-              <Sidebar
-                users={users}
-                currentUser={currentUser}
-                setCurrentUser={setCurrentUser}
-              />
+              <Sidebar/>
             </div>
-            <Feed users={users} currentUser={currentUser} />
+            <Feed/>
             <Widgets />
           </div>
         </div>
