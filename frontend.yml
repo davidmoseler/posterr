@@ -1,0 +1,5 @@
+services:
+  frontend-config:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app

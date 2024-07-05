@@ -6,58 +6,41 @@ services:
     env_file:
       ".env"
     restart: always
-  backend-config:
-    build: ./backend
-    volumes:
-      - ./backend:/rails
-    depends_on:
-      - db
-    env_file:
-      ".env"
-    profiles:
-      - none
-  backend-server:
-    extends: backend-config
-    command: >
-      ./bin/rails server -b 0.0.0.0
-    restart: always
-    profiles:
-      - none
   backend:
-    extends: backend-server
+    extends:
+      file: backend.yml
+      service: backend-server
+    ports:
+      - 5000:3000
+    restart: always
+  rake:
+    extends:
+      file: backend.yml
+      service: backend-config
+    entrypoint: ./bin/rake
+    profiles:
+      - rake
+  rails:
+    extends:
+      file: backend.yml
+      service: backend-config
+    entrypoint: ./bin/rails
+    profiles:
+      - rails
+  frontend:
+    extends:
+      file: frontend.yml
+      service: frontend-config
     ports:
       - 3000:3000
+    restart: always
+  npm:
+    extends:
+      file: frontend.yml
+      service: frontend-config
+    entrypoint: npm
     profiles:
-      - prod
-  backend-dev:
-    extends: backend-server
-    environment:
-      RAILS_ENV: development
-    ports:
-      - 3000:3000
-    profiles:
-      - dev
-  backend-test:
-    extends: backend-config
-    command: ./bin/bundle exec rspec spec
-    environment:
-      RAILS_ENV: test
-    profiles:
-      - backend-test
-  db-migrate-dev:
-    extends: backend-config
-    command: ./bin/rake db:migrate
-    environment:
-      RAILS_ENV: development
-    profiles:
-      - migrate-dev
-  db-rollback-dev:
-    extends: backend-config
-    command: ./bin/rake db:rollback
-    environment:
-      RAILS_ENV: development
-    profiles:
-      - rollback-dev
+      - npm
 
 volumes:
   posterr-psql-data:
