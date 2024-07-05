@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  if Rails.env.test?
+    namespace :cypress do
+      delete 'cleanup', to: 'cleanup#destroy'
+    end
+  end
   post 'post/create_post'
   get 'post/get_posts'
   post 'post/repost'

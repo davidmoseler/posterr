@@ -22,7 +22,7 @@ const Post = ({ post }: { post: postType }) => {
   };
 
   return (
-    <div className="border-b border-gray-200 p-4">
+    <div className="post border-b border-gray-200 p-4">
       {post.is_repost ? (
         <p>{getUserName(post.reposter_id) + ' reposted'}</p>
       ) : (

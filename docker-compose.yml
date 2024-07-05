@@ -6,13 +6,22 @@ services:
     env_file:
       ".env"
     restart: always
+  backend-test:
+    extends:
+      file: backend.yml
+      service: backend-server
+    ports:
+      - 5000:3000
+    environment:
+      RAILS_ENV: test
+    profiles:
+      - end-to-end
   backend:
     extends:
       file: backend.yml
       service: backend-server
     ports:
       - 5000:3000
-    restart: always
   rake:
     extends:
       file: backend.yml
@@ -41,6 +50,14 @@ services:
     entrypoint: npm
     profiles:
       - npm
+  cypress:
+    build: ./end-to-end
+    depends_on:
+      - backend-test
+      - frontend
+    # entrypoint: npx cypress open
+    profiles:
+      - end-to-end
 
 volumes:
   posterr-psql-data:

@@ -9,6 +9,6 @@
 #   end
 #
 #
-["Me", "John Doe", "Robert Denzer", "Sheila Doe"].each do |name|
-  User.create name: name
-end
+require File.join(Rails.root, "lib", "seed_db")
+
+seed_db
