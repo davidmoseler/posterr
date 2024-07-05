@@ -7,25 +7,28 @@ import Sidebar from './components/Sidebar';
 import Feed from './components/Feed';
 import Widgets from './components/Widgets';
 import user from './types/user';
+import { ContainerProvider, dependencyContainer } from './dependencyContainer';
 
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen flex flex-col">
-          <div className="flex">
-            <div className="flex flex-col">
-              <Navbar />
-              <Sidebar/>
+    <ContainerProvider container={dependencyContainer}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <div className="min-h-screen flex flex-col">
+            <div className="flex">
+              <div className="flex flex-col">
+                <Navbar />
+                <Sidebar />
+              </div>
+              <Feed />
+              <Widgets />
             </div>
-            <Feed/>
-            <Widgets />
           </div>
-        </div>
-      </QueryClientProvider>
-    </Provider>
+        </QueryClientProvider>
+      </Provider>
+    </ContainerProvider>
   );
 };
 

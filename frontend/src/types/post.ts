@@ -1,4 +1,4 @@
-interface post {
+interface postType {
   post_id: string;
   content: string;
   user_id: string;
@@ -7,4 +7,4 @@ interface post {
   reposter_id: string;
 }
 
-export default post;
+export default postType;

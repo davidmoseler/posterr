@@ -1,16 +1,28 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import { search } from '../state/searchSlice';
 import { sortByLatest, sortByTrending } from '../state/sortingSlice';
 
-const Widgets = () => {
+dependencyContainer.register('Widgets', () => {
   const dispatch = useDispatch();
+
+  return {
+    search: (searchTerm: string) => dispatch(search(searchTerm)),
+    sortByLatest: () => dispatch(sortByLatest()),
+    sortByTrending: () => dispatch(sortByTrending()),
+  };
+});
+
+const Widgets = () => {
+  const {search, sortByLatest, sortByTrending} = useDependencies('Widgets');
+
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      dispatch(search(searchTerm));
+      search(searchTerm);
     }
   };
 
@@ -25,16 +37,10 @@ const Widgets = () => {
       ></input>
       <div className="p-4 flex flex-col">
         <h2 className="my-4 text-xl font-bold">What's happening</h2>
-        <a
-          className="my-4 p-2 rounded"
-          onClick={() => dispatch(sortByLatest())}
-        >
+        <a className="my-4 p-2 rounded" onClick={() => sortByLatest()}>
           Latest
         </a>
-        <a
-          className="my-4 p-2 rounded"
-          onClick={() => dispatch(sortByTrending())}
-        >
+        <a className="my-4 p-2 rounded" onClick={() => sortByTrending()}>
           Trending
         </a>
       </div>
