@@ -21,7 +21,7 @@ export const userSlice = createSlice({
   },
 })
 
-interface userSliceType {
+interface TUserSlice {
   users: TUser[],
   currentUser: {
     id: string
@@ -29,6 +29,6 @@ interface userSliceType {
 }
 
 export const { setUser } = userSlice.actions;
-export type { userSliceType };
+export type { TUserSlice };
 
 export default userSlice.reducer;

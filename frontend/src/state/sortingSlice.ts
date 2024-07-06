@@ -15,11 +15,11 @@ export const sortingSlice = createSlice({
   },
 })
 
-interface sortingSliceType {
+interface TSortingSlice {
   value: string
 }
 
 export const { sortByLatest, sortByTrending } = sortingSlice.actions
-export type { sortingSliceType };
+export type { TSortingSlice };
 
 export default sortingSlice.reducer

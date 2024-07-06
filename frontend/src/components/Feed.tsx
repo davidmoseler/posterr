@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useInView } from 'react-intersection-observer';
-import { InfiniteData, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import Post from './Post';
 import TPost from '../types/post';

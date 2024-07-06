@@ -12,11 +12,11 @@ export const searchSlice = createSlice({
   },
 })
 
-interface searchSliceType {
+interface TSliceType {
   value: string
 }
 
 export const { search } = searchSlice.actions
-export type { searchSliceType };
+export type { TSliceType };
 
 export default searchSlice.reducer
