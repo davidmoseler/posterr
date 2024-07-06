@@ -167,13 +167,13 @@ RSpec.describe PostService do
       before(:each) do
         @post = Post.new user: @other_user, content: "Hello"
 
-        allow(@service).to receive(:save_repost)
+        allow(@service).to receive(:save_post)
       end
 
       it "it should be possible for the user to repost" do
         @service.repost(@post)
 
-        expect(@service).to have_received(:save_repost).with(
+        expect(@service).to have_received(:save_post).with(
           an_object_having_attributes(
             :post => @post,
             :user => @user
@@ -187,13 +187,13 @@ RSpec.describe PostService do
         @post = Post.new user: @other_user, content: "Hello"
         @repost = Repost.new user: @yet_another_user, post: @post
 
-        allow(@service).to receive(:save_repost)
+        allow(@service).to receive(:save_post)
       end
 
       it "it should still be possible for the user to repost" do
         @service.repost(@post)
 
-        expect(@service).to have_received(:save_repost).with(
+        expect(@service).to have_received(:save_post).with(
           an_object_having_attributes(
             :post => @post,
             :user => @user

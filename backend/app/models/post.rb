@@ -28,4 +28,12 @@ class Post < ApplicationRecord
       )
     )
   end
+
+  def self.new_repost(*args)
+    Repost.new *args
+  end
+
+  def is_repost
+    false
+  end
 end

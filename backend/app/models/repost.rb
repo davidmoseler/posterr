@@ -10,7 +10,7 @@ class Repost < ApplicationRecord
     end
   end
 
-  def content
-    post.content
+  def is_repost
+    true
   end
 end

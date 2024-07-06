@@ -5,8 +5,7 @@ class PostService
 
   def create_post(content)
     check_allowed
-    post = Post.new content: content, user: @user
-    save_post(post)
+    save_post(Post.new content: content, user: @user)
   end
 
   def get_posts(page, search_term: nil, sorting: "latest", base_query: base_query())
@@ -20,18 +19,13 @@ class PostService
     raise PostServiceException::RepostRepost if is_repost(post)
     raise PostServiceException::RepostOwnPost if post.user == @user
 
-    repost = Repost.new post: post, user: @user
-    save_repost(repost)
+    save_post(Post.new_repost post: post, user: @user)
   end
 
   private
 
   def save_post(post)
     post.save!
-  end
-
-  def save_repost(repost)
-    repost.save!
   end
 
   def check_allowed
@@ -74,7 +68,7 @@ class PostService
   end
 
   def is_repost(post)
-    post.instance_of? Repost
+    post.is_repost
   end
 end
 

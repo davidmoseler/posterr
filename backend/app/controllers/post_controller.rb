@@ -6,8 +6,9 @@ class PostController < ApplicationController
   end
 
   def get_posts
-    page = params[:page].to_i
-    posts = @post_service.get_posts(page, **get_posts_params)
+    post_params = get_posts_params
+    page = post_params.delete(:page)
+    posts = @post_service.get_posts(page, **post_params)
     n_pages = 1 + (posts.length-10)/15
     render :json => {
       data: posts.execute,
@@ -29,6 +30,7 @@ class PostController < ApplicationController
 
   def get_posts_params
     hsh = {}
+    hsh[:page] = params[:page].to_i
     hsh[:search_term] = params[:search_term] unless params[:search_term].blank?
     hsh[:sorting] = params[:sorting] unless params[:sorting].blank?
     hsh
