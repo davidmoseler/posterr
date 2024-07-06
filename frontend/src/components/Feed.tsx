@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useInView } from 'react-intersection-observer';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -7,19 +7,24 @@ import Post from './Post';
 import TPost from '../types/post';
 import { useGetPosts, useCreatePost } from '../repositories/postRepository';
 import { RootState } from '../store';
+import useOnChange from '../hooks/useOnChange';
 
 dependencyContainer.register('Feed', () => {
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    queryClient.resetQueries({ queryKey: ['posts'], exact: true });
-  }, [searchTerm, sorting]);
-  const currentUser = useSelector((state: RootState) => state.user.currentUser.id);
+  const currentUser = useSelector(
+    (state: RootState) => state.user.currentUser.id
+  );
   const searchTerm = useSelector((state: RootState) => state.search.value);
   const sorting = useSelector((state: RootState) => state.sorting.value);
 
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useGetPosts(currentUser, searchTerm, sorting);
+
+  useOnChange(
+    () => queryClient.resetQueries({ queryKey: ['posts'], exact: true }),
+    { searchTerm, sorting }
+  );
 
   const useCreatePostWrapper = (
     newPostContent: string,
@@ -61,9 +66,9 @@ const Feed = () => {
     }
   };
 
-  const mergePages = (pages: {data: TPost[]}[]) => {
-    const posts: TPost[ ]= [];
-    pages.forEach((p: {data: TPost[]}) => {
+  const mergePages = (pages: { data: TPost[] }[]) => {
+    const posts: TPost[] = [];
+    pages.forEach((p: { data: TPost[] }) => {
       p.data.forEach((post: TPost) => posts.push(post));
     });
     return posts;
