@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import TUser from '../types/user';
 
 export const userSlice = createSlice({
   name: 'user',
@@ -20,6 +21,14 @@ export const userSlice = createSlice({
   },
 })
 
-export const { setUser } = userSlice.actions
+interface userSliceType {
+  users: TUser[],
+  currentUser: {
+    id: string
+  }
+}
 
-export default userSlice.reducer
+export const { setUser } = userSlice.actions;
+export type { userSliceType };
+
+export default userSlice.reducer;

@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { ContainerProvider } from '../dependencyContainer';
 import Post from '../components/Post';
-import postType from '../types/post';
-import userType from '../types/user';
+import TPost from '../types/post';
+import TUser from '../types/user';
 
-let users: userType[];
-let post: postType;
+let users: TUser[];
+let post: TPost;
 let repost: Function;
 let dependencyContainer: {
   registry: any;
@@ -34,7 +34,7 @@ beforeEach(() => {
 
   dependencyContainer = {
     registry: {
-      Post: (post: postType) => ({ users, repost }),
+      Post: (post: TPost) => ({ users, repost }),
     },
     resolve(identifier: string) {
       return this.registry[identifier];

@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { ContainerProvider } from '../dependencyContainer';
 import Sidebar from '../components/Sidebar';
-import userType from '../types/user';
+import TUser from '../types/user';
 import { current } from '@reduxjs/toolkit';
 
-let users: userType[];
+let users: TUser[];
 let currentUser: string;
 let setUser: Function;
 let dependencyContainer: {

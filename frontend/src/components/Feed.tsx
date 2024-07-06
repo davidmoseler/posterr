@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useInView } from 'react-intersection-observer';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import Post from './Post';
-import postType from '../types/post';
+import TPost from '../types/post';
 import { useGetPosts, useCreatePost } from '../repositories/postRepository';
+import { RootState } from '../store';
 
 dependencyContainer.register('Feed', () => {
   const queryClient = useQueryClient();
 
-  const currentUser = useSelector((state: any) => state.user.currentUser.id);
-  const searchTerm = useSelector((state: any) => state.search.value);
-  const sorting = useSelector((state: any) => state.sorting.value);
-
   useEffect(() => {
     queryClient.resetQueries({ queryKey: ['posts'], exact: true });
   }, [searchTerm, sorting]);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser.id);
+  const searchTerm = useSelector((state: RootState) => state.search.value);
+  const sorting = useSelector((state: RootState) => state.sorting.value);
 
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useGetPosts(currentUser, searchTerm, sorting);
 
   const useCreatePostWrapper = (
     newPostContent: string,
-    setNewPostContent: Function
+    setNewPostContent: (content: string) => void
   ) => {
     return useCreatePost(currentUser, newPostContent, () =>
       setNewPostContent('')
@@ -61,10 +61,10 @@ const Feed = () => {
     }
   };
 
-  const mergePages = (pages: any) => {
-    const posts: any = [];
-    pages.forEach((p: any) => {
-      p.data.forEach((post: postType) => posts.push(post));
+  const mergePages = (pages: {data: TPost[]}[]) => {
+    const posts: TPost[ ]= [];
+    pages.forEach((p: {data: TPost[]}) => {
+      p.data.forEach((post: TPost) => posts.push(post));
     });
     return posts;
   };
@@ -105,7 +105,7 @@ const Feed = () => {
         </div>
       </div>
       <div>
-        {posts.map((post: postType) => (
+        {posts.map((post: TPost) => (
           <Post post={post} />
         ))}
       </div>

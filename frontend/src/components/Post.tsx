@@ -2,22 +2,23 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import { useRepost } from '../repositories/postRepository';
-import postType from '../types/post';
-import userType from '../types/user';
+import TPost from '../types/post';
+import TUser from '../types/user';
+import { RootState } from '../store';
 
-dependencyContainer.register('Post', ({ post }: { post: postType }) => {
-  const users = useSelector((state: any) => state.user.users);
-  const currentUser = useSelector((state: any) => state.user.currentUser);
+dependencyContainer.register('Post', ({ post }: { post: TPost }) => {
+  const users = useSelector((state: RootState) => state.user.users);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const repost = useRepost(currentUser.id, post.post_id);
 
   return { users, repost };
 });
 
-const Post = ({ post }: { post: postType }) => {
+const Post = ({ post }: { post: TPost }) => {
   const { users, repost } = useDependencies('Post', { post });
 
   const getUserName = (user_id: string) => {
-    const user = users.find((u: any) => u.id == user_id);
+    const user = users.find((u: TUser) => u.id == user_id);
     return user ? user.name : '';
   };
 

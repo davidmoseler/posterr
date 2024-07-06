@@ -3,12 +3,14 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import { setUser } from '../state/userSlice';
+import { RootState } from '../store';
+import TUser from '../types/user';
 
 dependencyContainer.register('Sidebar', () => {
   const dispatch = useDispatch();
 
-  const users = useSelector((state: any) => state.user.users);
-  const currentUser = useSelector((state: any) => state.user.currentUser.id);
+  const users = useSelector((state: RootState) => state.user.users);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser.id);
 
   return {
     users,
@@ -23,7 +25,7 @@ const Sidebar = () => {
   return (
     <div className="flex flex-col w-80 h-screen p-4 bg-white border-r border-gray-200">
       <div className="space-y-4"></div>
-      {users.map((u: any) => (
+      {users.map((u: TUser) => (
         <button
           onClick={() => setUser(u.id)}
           className={'p-2 rounded' + (u.id === currentUser ? ' font-bold' : '')}

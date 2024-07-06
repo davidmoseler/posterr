@@ -55,18 +55,17 @@ const postRepository = {
   ) => {
     return useInfiniteQuery({
       queryKey: ['posts'],
-      queryFn: ({ pageParam }: { pageParam: any }) =>
+      queryFn: ({ pageParam }: { pageParam: number }) =>
         getPosts(currentUser, pageParam, searchTerm, sorting),
       initialPageParam: 1,
-      getNextPageParam: (lastPage: any) => lastPage.nextPage,
-      getPreviousPageParam: (firstPage: any) => firstPage.previousPage,
+      getNextPageParam: (lastPage: { nextPage: number }) => lastPage.nextPage,
     });
   },
   useCreatePost: (
     currentUser: string,
     newPostContent: string,
-    onSuccess: Function
-  ) => { 
+    onSuccess: () => any
+  ) => {
     const queryClient = useQueryClient();
     const { mutate } = useMutation({
       mutationFn: () =>

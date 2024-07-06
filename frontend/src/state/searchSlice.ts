@@ -12,6 +12,11 @@ export const searchSlice = createSlice({
   },
 })
 
+interface searchSliceType {
+  value: string
+}
+
 export const { search } = searchSlice.actions
+export type { searchSliceType };
 
 export default searchSlice.reducer

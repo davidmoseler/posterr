@@ -1,6 +1,6 @@
-interface userType {
+interface TUser {
   id: string;
   name: string;
 }
 
-export default userType;
+export default TUser;

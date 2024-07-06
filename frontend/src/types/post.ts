@@ -1,4 +1,4 @@
-interface postType {
+interface TPost {
   post_id: string;
   content: string;
   user_id: string;
@@ -7,4 +7,4 @@ interface postType {
   reposter_id: string;
 }
 
-export default postType;
+export default TPost;

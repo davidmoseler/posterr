@@ -1,7 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
-import searchReducer from './state/searchSlice'
-import sortingReducer from './state/sortingSlice'
-import userReducer from './state/userSlice'
+import searchReducer, { searchSliceType } from './state/searchSlice'
+import sortingReducer, { sortingSliceType } from './state/sortingSlice'
+import userReducer, { userSliceType } from './state/userSlice'
+
+interface RootState {
+  user: userSliceType,
+  search: searchSliceType,
+  sorting: sortingSliceType,
+}
 
 export default configureStore({
   reducer: {
@@ -10,3 +16,5 @@ export default configureStore({
     user: userReducer
   },
 })
+
+export type { RootState };

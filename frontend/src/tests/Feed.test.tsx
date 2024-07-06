@@ -5,12 +5,12 @@ import '@testing-library/jest-dom';
 import { ContainerProvider } from '../dependencyContainer';
 import { InfiniteData } from '@tanstack/react-query';
 import Feed from '../components/Feed';
-import postType from '../types/post';
-import userType from '../types/user';
+import TPost from '../types/post';
+import TUser from '../types/user';
 
-let users: userType[];
+let users: TUser[];
 let repost: Function;
-let data: { pages: { data: postType[] }[] };
+let data: { pages: { data: TPost[] }[] };
 let fetchNextPage: Function;
 let hasNextPage: boolean;
 let isFetching: boolean;
