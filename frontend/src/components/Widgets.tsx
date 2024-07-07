@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { dependencyContainer, useDependencies } from '../dependencyContainer';
 import { search } from '../state/searchSlice';
 import { sortByLatest, sortByTrending } from '../state/sortingSlice';
+import { RootState } from '../store';
 
 dependencyContainer.register('Widgets', () => {
   const dispatch = useDispatch();
 
+  const sorting = useSelector((state: RootState) => state.sorting.value);
+
   return {
+    sorting,
     search: (searchTerm: string) => dispatch(search(searchTerm)),
     sortByLatest: () => dispatch(sortByLatest()),
     sortByTrending: () => dispatch(sortByTrending()),
@@ -15,7 +20,8 @@ dependencyContainer.register('Widgets', () => {
 });
 
 const Widgets = () => {
-  const {search, sortByLatest, sortByTrending} = useDependencies('Widgets');
+  const { sorting, search, sortByLatest, sortByTrending } =
+    useDependencies('Widgets');
 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -37,12 +43,22 @@ const Widgets = () => {
       ></input>
       <div className="p-4 flex flex-col">
         <h2 className="my-4 text-xl font-bold">What's happening</h2>
-        <a className="my-4 p-2 rounded" onClick={() => sortByLatest()}>
+        <button
+          className={
+            'text-left my-2 p-2 rounded' + (sorting === 'latest' ? ' font-bold' : '')
+          }
+          onClick={() => sortByLatest()}
+        >
           Latest
-        </a>
-        <a className="my-4 p-2 rounded" onClick={() => sortByTrending()}>
+        </button>
+        <button
+          className={
+            'text-left my-2 p-2 rounded' + (sorting === 'trending' ? ' font-bold' : '')
+          }
+          onClick={() => sortByTrending()}
+        >
           Trending
-        </a>
+        </button>
       </div>
     </div>
   );

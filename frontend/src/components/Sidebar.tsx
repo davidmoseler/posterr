@@ -28,7 +28,7 @@ const Sidebar = () => {
       {users.map((u: TUser) => (
         <button
           onClick={() => setUser(u.id)}
-          className={'p-2 rounded' + (u.id === currentUser ? ' font-bold' : '')}
+          className={'text-left my-1 p-2 rounded' + (u.id === currentUser ? ' font-bold' : '')}
         >
           {u.name}
         </button>

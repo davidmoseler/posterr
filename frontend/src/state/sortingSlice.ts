@@ -16,7 +16,7 @@ export const sortingSlice = createSlice({
 })
 
 interface TSortingSlice {
-  value: string
+  value: "latest" | "trending"
 }
 
 export const { sortByLatest, sortByTrending } = sortingSlice.actions
