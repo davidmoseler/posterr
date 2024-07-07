@@ -7,12 +7,9 @@ const dependencyContainer: {
 } = {
   registry: {},
   register(componentName: string, dependenciesHook: Function) {
-    if (this.registry.hasOwnProperty(componentName)) {
-      throw new Error(
-        `Dependencies hook for ${componentName} has already been registered`
-      );
+    if (!this.registry.hasOwnProperty(componentName)) {
+      this.registry[componentName] = dependenciesHook;
     }
-    this.registry[componentName] = dependenciesHook;
   },
   resolve(componentName: string) {
     if (!this.registry.hasOwnProperty(componentName)) {
