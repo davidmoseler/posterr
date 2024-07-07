@@ -41,7 +41,7 @@ const Post = ({ post }: { post: TPost }) => {
             height="25px"
             viewBox="0 0 24 24"
             stroke="#000000"
-            stroke-width="2"
+            strokeWidth="2"
             fill="none"
           >
             {' '}

@@ -111,7 +111,7 @@ const Feed = () => {
       </div>
       <div>
         {posts.map((post: TPost) => (
-          <Post post={post} />
+          <Post key={post.post_id} post={post} />
         ))}
       </div>
       <button

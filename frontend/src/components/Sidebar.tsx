@@ -10,7 +10,9 @@ dependencyContainer.register('Sidebar', () => {
   const dispatch = useDispatch();
 
   const users = useSelector((state: RootState) => state.user.users);
-  const currentUser = useSelector((state: RootState) => state.user.currentUser.id);
+  const currentUser = useSelector(
+    (state: RootState) => state.user.currentUser.id
+  );
 
   return {
     users,
@@ -27,8 +29,12 @@ const Sidebar = () => {
       <div className="space-y-4"></div>
       {users.map((u: TUser) => (
         <button
+          key={u.id}
           onClick={() => setUser(u.id)}
-          className={'text-left my-1 p-2 rounded' + (u.id === currentUser ? ' font-bold' : '')}
+          className={
+            'text-left my-1 p-2 rounded' +
+            (u.id === currentUser ? ' font-bold' : '')
+          }
         >
           {u.name}
         </button>
