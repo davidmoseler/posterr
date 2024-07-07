@@ -9,8 +9,7 @@ class PostService
   end
 
   def get_posts(page, search_term: nil, sorting: "latest", base_query: base_query())
-    query = sort(base_query, sorting)
-    query = filter(query, search_term)
+    query = apply_filters(base_query, search_term, sorting)
     query = paginate(query, page)
     query
   end
@@ -20,6 +19,11 @@ class PostService
     raise PostServiceException::RepostOwnPost if post.user == @user
 
     save_post(Post.new_repost post: post, user: @user)
+  end
+
+  def n_posts(search_term: nil, sorting: "latest", base_query: base_query())
+    query = apply_filters(base_query, search_term, sorting)
+    query.count
   end
 
   private
@@ -69,6 +73,11 @@ class PostService
 
   def is_repost(post)
     post.is_repost
+  end
+
+  def apply_filters(query, search_term, sorting)
+    query = sort(query, sorting)
+    return filter(query, search_term)
   end
 end
 

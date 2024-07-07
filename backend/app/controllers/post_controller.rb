@@ -9,10 +9,11 @@ class PostController < ApplicationController
     post_params = get_posts_params
     page = post_params.delete(:page)
     posts = @post_service.get_posts(page, **post_params)
-    n_pages = 1 + (posts.length-10)/15
+    n_posts = @post_service.n_posts(**post_params)
+    n_pages = 1 + ((n_posts-15)/20.0).ceil
     render :json => {
       data: posts.execute,
-      nextPage: page+1 > n_pages ? page+1 : nil
+      nextPage: page+1 > n_pages ? nil : page+1
     }
   end
 
