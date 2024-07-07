@@ -2,7 +2,13 @@ class PostController < ApplicationController
   before_action :get_post_service
 
   def create_post
-    @post_service.create_post(params[:content])
+    begin
+      @post_service.create_post(params[:content])
+    rescue PostServiceException::RateLimit => error
+      render :json => {
+        exception: error.exception
+      }, status: 429
+    end
   end
 
   def get_posts
@@ -18,8 +24,18 @@ class PostController < ApplicationController
   end
 
   def repost
-    post = Post.find(params[:post_id])
-    @post_service.repost(post)
+    begin
+      post = Post.find(params[:post_id])
+      @post_service.repost(post)
+    rescue PostServiceException::RepostRepost => error
+      render :json => {
+        exception: error.exception
+      }, status: 422
+    rescue PostServiceException::RepostOwnPost => error
+      render :json => {
+        exception: error.exception
+      }, status: 409
+    end
   end
 
   private

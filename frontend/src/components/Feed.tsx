@@ -18,7 +18,7 @@ dependencyContainer.register('Feed', () => {
   const searchTerm = useSelector((state: RootState) => state.search.value);
   const sorting = useSelector((state: RootState) => state.sorting.value);
 
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+  const { data, isError, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
     useGetPosts(currentUser, searchTerm, sorting);
 
   useOnChange(
@@ -37,9 +37,10 @@ dependencyContainer.register('Feed', () => {
 
   return {
     data,
+    isGettingPosts: isFetching,
+    getPostsError: isError,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
     useCreatePost: useCreatePostWrapper,
   };
@@ -48,9 +49,10 @@ dependencyContainer.register('Feed', () => {
 const Feed = () => {
   const {
     data,
+    isGettingPosts,
+    getPostsError,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
     useCreatePost,
   } = useDependencies('Feed');
@@ -114,7 +116,7 @@ const Feed = () => {
           <Post key={post.post_id} post={post} />
         ))}
       </div>
-      <button
+      {/* <button
         ref={ref}
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
@@ -124,7 +126,17 @@ const Feed = () => {
           : hasNextPage
           ? 'Fetch More Data'
           : 'No more posts'}
-      </button>
+      </button> */}
+      { isGettingPosts?
+        <p className="m-4 text-center">Loading posts...</p> : <></>
+        }
+      { getPostsError?
+      <div className="m-4 text-center"
+      >
+        <h2 className="font-bold">Couldn't get posts at this time</h2>
+        <p>Please wait a few moments then try again</p>
+      </div>: <></>
+}
     </div>
   );
 };

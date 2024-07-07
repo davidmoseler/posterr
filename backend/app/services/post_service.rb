@@ -97,13 +97,13 @@ class PostServiceException::InvalidParams < Exception
 end
 
 class PostServiceException::RepostOwnPost < Exception
-  def initialize(msg="The user is trying to repost their own post")
+  def initialize(msg="You tried to repost your own post")
     super
   end
 end
 
 class PostServiceException::RepostRepost < Exception
-  def initialize(msg="The user is trying to repost a repost")
+  def initialize(msg="You tried to repost a repost")
     super
   end
 end

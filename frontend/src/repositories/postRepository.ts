@@ -1,4 +1,5 @@
 import { useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import fetchWrapper, {onError} from './fetchWrapper';
 
 async function getPosts(
   user_id: string,
@@ -6,8 +7,8 @@ async function getPosts(
   searchTerm: string,
   sorting: string
 ) {
-  const response = await fetch(
-    'http://localhost:5000/post/get_posts?' +
+  return fetchWrapper(
+    '/post/get_posts?' +
     'page=' +
     page +
     '&user_id=' +
@@ -16,13 +17,7 @@ async function getPosts(
     searchTerm +
     '&sorting=' +
     sorting,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-  return response.json();
+  )
 }
 
 const postRepository = {
@@ -31,11 +26,8 @@ const postRepository = {
 
     const { mutate } = useMutation({
       mutationFn: () =>
-        fetch('http://localhost:5000/post/repost', {
+        fetchWrapper('/post/repost', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             user_id: userId,
             post_id: postId,
@@ -44,6 +36,7 @@ const postRepository = {
       onSuccess: () => {
         queryClient.resetQueries({ queryKey: ['posts'], exact: true });
       },
+      onError
     });
 
     return mutate;
@@ -69,11 +62,8 @@ const postRepository = {
     const queryClient = useQueryClient();
     const { mutate } = useMutation({
       mutationFn: () =>
-        fetch('http://localhost:5000/post/create_post', {
+        fetchWrapper('/post/create_post', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             user_id: currentUser,
             content: newPostContent,
@@ -83,6 +73,7 @@ const postRepository = {
         onSuccess();
         queryClient.resetQueries({ queryKey: ['posts'], exact: true });
       },
+      onError,
     });
 
     return mutate;
