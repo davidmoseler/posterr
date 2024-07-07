@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_03_010105) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_07_221441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_010105) do
     t.integer "n_reposts", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_posts_on_created_at"
+    t.index ["n_reposts"], name: "index_posts_on_n_reposts"
     t.index ["user_id"], name: "index_posts_on_user_id"
     t.check_constraint "char_length(content) <= 777", name: "content_max_length"
     t.check_constraint "content <> ''::text", name: "content_not_empty"
