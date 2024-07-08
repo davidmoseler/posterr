@@ -1,4 +1,4 @@
-# Posterr
+# Posterr (David)
 
 Make sure you have a nice markup visualization tool for following this readme.
 
@@ -20,6 +20,12 @@ The backend api will be accessible through http://localhost:5000.
 To run the end to end tests, make sure you have Cypress installed in your system ([Cypress installation guide](https://docs.cypress.io/guides/getting-started/installing-cypress)).
 
 Usually $ npm install cypress $ should be enough.
+
+## Creating posts
+
+The database doesn't have any seed posts. One can directly create them using the UI.
+
+The assessment document asked not to implement authentication logic, so I have hardcoded users both on the backend and frotnend. The current user can be chosen through the sidebar to make things easier. This is important while testing repost logic, so that you can create posts on behalf of other users.
 
 ## Running the test suites
 
@@ -95,7 +101,7 @@ To address some of the points mentioned in the Briefing and to enhance testabili
 
 Such ideas can be very helpful when developers are mindful of them, but they might lead to boilerplate and overbloated code if they are taken to the extreme.
 
-To give one example, I have taken some care to decouple the ORM implementation (ActiveRecord) from the interface between the Data Access Layer and the Services Layer. To accomplish that, I have defined a bunch of semantic methods on the Post model and the Feed query, to be accessed by the PostService (more on that later).
+To give one example, I have taken some care to decouple the ORM implementation (ActiveRecord) from the interface between the Data Access Layer and the Services Layer. To accomplish that, I have defined a bunch of semantic methods on the Post model and the PostFeed query, to be accessed by the PostService (more on that later).
 
 Such decoupling allows the business rules to be defined inside of the PostService without using the ActiveRecord interface. The Data Acess Layer wraps ActiveRecord in a simpler, more semantic and domain-specific interface that the Service Layer can access.
 
@@ -119,11 +125,12 @@ We have a PostService that can be instantiated with a user, like this:
     post_service = PostService.new(@user)
 ```
 
-Then, it exposes three methods:
+Then, it exposes four methods:
 
 ```
     post_service.create_post(content)
     post_service.get_posts(page, search_term, sorting)
+    post_service.n_posts(search_term, sorting)
     post_service.repost(post)
 ```
 
@@ -158,7 +165,7 @@ As we'll see, the reposts are implemented via a different class, Repost, in the 
 
 The "feed" type is a new thing. As far as the Service Layer is concerned, it doesn't need to be different from posts[] at all. What matters is that it implements a Query Interface. Let's talk about that.
 
-#### The Query Interface and the Feed
+#### The Query Interface and the PostFeed
 
 Many ORMs implement a query interface. ActiveRecord is no exception.
 
@@ -170,7 +177,7 @@ The query interface allows us to define certain operations at the lower Data Acc
 
 The essential aspect of the implementation of the query interface is the commutative composability of the operations, which is achieved by the query having methods that return another query with the exact same interface.
 
-Feed is a query that represents the posts feed. This is the interface:
+PostFeed is a query that represents the posts feed. This is the interface:
 
 ```
     def original; end; => feed
@@ -204,19 +211,19 @@ The repost.save method is modified so that it increases the reposts count of the
 
 As mentioned before, Repost is made to reasonably implement the "post" interface at the Service Layer level. This is *not* taken to the extreme, though. For example, we could add a "self.new_repost" method to Repost, returning Repost.new. That method would never be actually called in the Service Layer though, so we avoid boilerplate. Again, refer to the 80/20 rule.
 
-#### The Feed Query object
+#### The PostFeed Query object
 
-The star of the Data Access layer, however, is the Feed. It is not an ActiveRecord model, but a query wrapper that implements all of the ActiveRecord query methods (through delegation), plus the interface listed above. When any ActiveRecord query method is called on the Feed, it returns another Feed if that method returns another ActiveRecord query, and returns the result otherwise. This way, methods like where, to_a and length work automatically on the Feed instances, and they behave like you would expect.
+The star of the Data Access layer, however, is the PostFeed. It is not an ActiveRecord model, but a query wrapper that implements all of the ActiveRecord query methods (through delegation), plus the interface listed above. When any ActiveRecord query method is called on the PostFeed, it returns another PostFeed if that method returns another ActiveRecord query, and returns the result otherwise. This way, methods like where, to_a and length work automatically on the PostFeed instances, and they behave like you would expect.
 
-In terms of the interface, and as far as the Service Layer is concerned, the Feed is *exactly* the same as a Post query with some scopes ("original", "search", "latest", etc). So you might ask, why didn't I just implement those methods with scopes, instead of creating a new Query class?
+In terms of the interface, and as far as the Service Layer is concerned, the PostFeed is *exactly* the same as a Post query with some scopes ("original", "search", "latest", etc). So you might ask, why didn't I just implement those methods with scopes, instead of creating a new Query class?
 
 Initially, I did. However, if ".feed" was a Post scope, it would not be commutative with other scopes. That's because the result of "Post.feed" is a union with the Repost table. Some of the scopes, such as "original", would *break* if they were applied before "feed". So "Post.feed.original" would work, but "Post.original.feed" would break.
 
 I felt like this was betraying the expectations that Rails developers have on how scopes work (they usually commute), so it is better to *explicitly* tell the reader that the return of "Post.feed" is a different type from, say, "Post.all", and the way of doing this is declaring that type as a new class.
 
-Again, "Feed" is an implementation detail at the Data Access layer and, as far as higher layers are concerned, the "feed" type is just a regular post query, with some added fields such as "is_repost" and "reposter_id".
+Again, "PostFeed" is an implementation detail at the Data Access layer and, as far as higher layers are concerned, the "feed" type is just a regular post query, with some added fields such as "is_repost" and "reposter_id".
 
-The Post.feed method has the actual query used to generate this Feed. It uses the active_record_extended gem to be able to actually create a union query.
+The Post.feed method has the actual query used to generate this PostFeed. It uses the active_record_extended gem to be able to actually create a union query.
 
 I'll talk more about database performance later.
 
@@ -370,3 +377,75 @@ The dependencyContainer can be thought of as an external library. All that a dev
 This way, we have a very clean interface separating both Redux and the Repositories from the unit testable components.
 
 ## Tests
+
+### Overview
+
+We have unit and integration, both on the frontend and backend, and end-to-end tests
+
+The frontend tests rely heavily on the dependency injection discussed previously. For the backend, a combination of dependency injection and mocking was used. ActiveRecord is not mocked: the only thing mocked are special private methods in the PostService that were designed specifically to be mocked: they were designed specifically to isolate the side effects. So, instead of mocking post.save!, we mock post_service.save_post. I feel like this is a good practice as it makes mocking trivial: everything that needs to be mocked are methods defined on the actual unit that is being tested. These methods isolate the side effects, so that, when mocked, the service can be tested as a unit, and we are properly testing the business logic instead of hacking implementations.
+
+At least one test has been written for every single one of the business rules on the assessment document. Each of the backend layers has been tested.
+
+### Data Access Layer
+
+The Data Access layer is tested as a whole: we are not testing ActiveRecord models as a unit, but rather testing the actual working of that layer, otherwise we would be mostly testing ActiveRecord itself. We are testing the business logic on that layer, including model-level validation, database constraints, etc.
+
+The PostFeed is not tested separately from the Post. Again, PostFeed is more of an implementation detail of the Post than a unit of it's own.
+
+Whether these Data Access Layer tests are unit tests or integration tests, I leave for you to decide. It is kind of a subjective topic, as a "unit" can be thought of as a class, but it can also be thought of as a unit of functionality. Here, we have two data access models, Post and User, and I regard the database as their implementation detail. I don't want to test PostgreSQL in isolation from ActiveRecord. On this level, it makes sense for me to test both as a single unit.
+
+### Service Layer
+
+The separation of layers is where we need the isolation. So the Service Layer is subject to a very classic modality unit testing: the interfaces are well defined like we detailed before. Here, I could create stub objects to be passed to the PostService while testing, but the 80/20 rule tells me I have a very simple way of creating objects that implement the necessary interfaces: just creating post and user instances. Since no side effects happen (nothing changes on those records) because the side effect methods have been isolated and mocked, then this is equivalent to passing a stub with the test data.
+
+Where we need to actually construct an object is to stub the PostFeed. The real PostFeed builds a query, which gets executed against the database. We don't want that, and we want to test whether the correct query is built, at the semantic level (not the sql level), through the semantic interface we defined to implement the business rules. Again, the interface for the query is well defined and documented above. In the tests, we create a simple array object mocking the "scopes" and implementing pagination via Kaminari.paginate_array. With this, we can test all the business rules.
+
+### Presentation Layer
+
+All the business logic has been tested above in minimal detail. So the controller tests have a simple goal: check if all the pieces work together. There are simple tests with the goal of checking if every piece is connected properly and if nothing major is broken.
+
+### React Query and Redux?
+
+For this project, I'm not unit testing the stores or repositories. I feel like the end to end tests are a more interesting way to make sure things are working together in the frontend.
+
+### Dependency Hooks?
+
+The dependency hooks exist for separating the coupling between the components and the redux store or the repositories. So it doesn't make sense to "unit test" them. There could be integration tests, but, again, for this project I'm relying more on end to end tests for the frontend.
+
+### Components
+
+For testing the components, we create a dependency container with all the data that the components will get through the useDependency hook. This dependency container will also contain mocked methods for each mutation. This way, we test the component in isolation with sample dat, and guarantee that the proper mutations are being called when they should.
+
+The only thing that is actually mocked is the IntersectionObserver library, which is used for the infinite query to work as a timeline. This is unfortunate and the only reason I'm doing this is because there is some bug when the IntersectionObserver is used together with react testing library. I didn't want to spend too much time on modifying the library or looking for an alternative. The test doesn't need it, so merely mocking it does the trick for now.
+
+### End to end
+
+## Critique
+
+- I didn't make a responsive layout. That would be the first thing I would tackle if I had more time.
+
+- The frontend and end to end tests are not as comprehensive as the backend tests. A lot was done to allow tests to be developed with good practices, but that could be used more.
+
+- The UI can improve
+
+### On scaling:
+
+I cannot say which parts would fail first, as that is highly dependent on deployment. If eg. the Rails server would be deployed in a very capable server, and the database in a very poor server, the later could fail first, etc.
+
+Now, in terms of services/routes, the heavier service is obviously the getPosts one. Not only does it exchange more data, and queries the database more intensively, but it is also called more often than the ones to create posts or reposts in a typical user experience.
+
+Now, in the particular way this platform works, it begs for the implementation of a cache for post feeds as one of the first measures towards performance optimization. Since, in the current format, every user sees the exact same feed, then requests that happen for the post feed at around the same time could be hitting a cache and not the actual database. This pertains especially to the first page load, and also before the user scrolls down too much or a search has to hit too deep into the database.
+
+I won't delve too deep into caching strategies, but let's say we could have a number of redis nodes that are periodically updated with the latest posts, including on mutations. That takes a lot of load off the main database, as thousands of simultaneous users are reading the post feed from all these redis nodes instead of hitting the main database. On mutations (post creation, reposts), the writes can be done both to the database and to these multiple instances through a pub-sub architecture, which can be implemented using a messaging broker such as Kafka, RabbitMQ or cloud-specific solutions.
+
+Both the latest and trending feeds can be cached.
+
+If even then the database server is under heavy load, because there are too much searches being done for keywords that have not been cached, or if users are requesting too much old posts and the redis caches don't have enough memory to hold them, etc, then we can enhance the database with read replicas.
+
+See, the writes are much lower load and happen less often than the reads. Now, with read replicas, we can "scale the database horizontally" from the point of view of making the post feed available to more users.
+
+To scale the server for all the concurrent requests, the first thing we need to do is scale horizontally, which can happen elastically on demand. We can handle both the server scaling and the redis caches with a tool like Kubernetes for container orchestration.
+
+In order to direct the requests, of course, and also for aditional caching, we should use a Load Balancer. Of course, other standard caching systems would be in place, such as CDNs for the assets.
+
+Other more advanced scalability strategies might be needed at some point, such as database sharding, microservices, etc, but here I'm addressing the most likely scenario together with the first strategies that could be tried.
