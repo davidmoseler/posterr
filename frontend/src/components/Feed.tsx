@@ -116,7 +116,7 @@ const Feed = () => {
           <Post key={post.post_id} post={post} />
         ))}
       </div>
-      {/* <button
+      <button
         ref={ref}
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
@@ -126,7 +126,7 @@ const Feed = () => {
           : hasNextPage
           ? 'Fetch More Data'
           : 'No more posts'}
-      </button> */}
+      </button>
       { isGettingPosts?
         <p className="m-4 text-center">Loading posts...</p> : <></>
         }
