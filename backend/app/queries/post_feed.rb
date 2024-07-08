@@ -61,7 +61,7 @@ class PostFeed
 
   def method_missing(m, *args, &block)
     res = @query.send(m, *args, &block)
-    if(res.is_a? Enumerable)
+    if(res.is_a? ActiveRecord::Relation)
       PostFeed.new res
     else
       res
