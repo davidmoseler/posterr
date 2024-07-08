@@ -4,6 +4,9 @@ class PostController < ApplicationController
   def create_post
     begin
       @post_service.create_post(params[:content])
+      render :json => {
+        ok: true
+      }, status: 200
     rescue PostServiceException::RateLimit => error
       render :json => {
         exception: error.exception
@@ -27,6 +30,9 @@ class PostController < ApplicationController
     begin
       post = Post.find(params[:post_id])
       @post_service.repost(post)
+      render :json => {
+        ok: true
+      }, status: 200
     rescue PostServiceException::RepostRepost => error
       render :json => {
         exception: error.exception
