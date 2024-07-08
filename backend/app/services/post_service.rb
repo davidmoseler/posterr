@@ -68,7 +68,12 @@ class PostService
     raise PostServiceException::RepostRepost if is_repost(post)
     raise PostServiceException::RepostOwnPost if post.user == @user
 
-    save_post(Post.new_repost post: post, user: @user)
+
+    begin
+      save_post(Post.new_repost post: post, user: @user)
+    rescue ActiveRecord::RecordNotUnique
+      raise PostServiceException::DoubleRepost
+    end
   end
 
   def n_posts(search_term: nil, sorting: "latest", base_query: base_query())
@@ -154,6 +159,12 @@ end
 
 class PostServiceException::RepostRepost < Exception
   def initialize(msg="You tried to repost a repost")
+    super
+  end
+end
+
+class PostServiceException::DoubleRepost < Exception
+  def initialize(msg="You already reposted this post")
     super
   end
 end

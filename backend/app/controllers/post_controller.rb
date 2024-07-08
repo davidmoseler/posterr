@@ -41,6 +41,10 @@ class PostController < ApplicationController
       render :json => {
         exception: error.exception
       }, status: 409
+    rescue PostServiceException::DoubleRepost => error
+      render :json => {
+        exception: error.exception
+      }, status: 409
     end
   end
 
