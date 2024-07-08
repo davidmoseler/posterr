@@ -58,9 +58,9 @@ describe('loads and displays post', () => {
   });
 
   test('is able to repost', async () => {
-    expect(await screen.findByText('Repost')).toBeVisible();
+    expect(await screen.findByTestId('repost')).toBeVisible();
 
-    await userEvent.click(screen.getByText('Repost'));
+    await userEvent.click(screen.getByTestId('repost'));
 
     expect(repost).toHaveBeenCalled();
   });

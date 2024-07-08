@@ -34,7 +34,7 @@ const Post = ({ post }: { post: TPost }) => {
       {post.is_repost ? (
         <></>
       ) : (
-        <button onClick={() => repost()}>
+        <button data-testid="repost" onClick={() => repost()}>
           <svg
             className="text-teal-600"
             width="20px"
