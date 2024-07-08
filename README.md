@@ -4,6 +4,8 @@ Make sure you have a nice markup visualization tool for following this readme.
 
 The platform was written with Rails in the backend (api-only), PostgreSQL as the database, and React + Tailwindcss in the frontend. React Query has been used for the api communication, and Redux for frontend-only state.
 
+The critique section is in the end of the document.
+
 ## Installation
 
 You need to have docker composer installed in your system. Then, you can run the app by simply doing
