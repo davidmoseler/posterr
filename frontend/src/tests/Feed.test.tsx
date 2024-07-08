@@ -38,7 +38,7 @@ beforeEach(() => {
             content: 'Hello',
             user_id: '1',
             created_at: 'now',
-            is_repost: false,
+            repost: false,
             reposter_id: 'null',
           },
         ],

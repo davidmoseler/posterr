@@ -27,7 +27,7 @@ beforeEach(() => {
     content: 'Hello',
     user_id: '1',
     created_at: 'now',
-    is_repost: false,
+    repost: false,
     reposter_id: 'null',
   };
   repost = jest.fn();
@@ -68,7 +68,7 @@ describe('loads and displays post', () => {
   test('reposts are shown as reposts', async () => {
     post = {
       ...post,
-      is_repost: true,
+      repost: true,
       reposter_id: '1',
     };
 

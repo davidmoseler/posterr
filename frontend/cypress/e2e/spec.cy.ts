@@ -22,7 +22,7 @@ describe('home page', () => {
 
     cy.get('button:contains("You")').click();
 
-    cy.get('.post:contains("John Doe created a new post")').find(':contains("Repost")').click();
+    cy.get('.post:contains("John Doe created a new post")').find('[data-testid="repost"]').click();
 
     cy.get('.post:contains("John Doe created a new post")').eq(0).contains('reposted')
   })

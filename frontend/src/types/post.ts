@@ -3,7 +3,7 @@ interface TPost {
   content: string;
   user_id: string;
   created_at: string;
-  is_repost: boolean;
+  repost: boolean;
   reposter_id: string;
 }
 

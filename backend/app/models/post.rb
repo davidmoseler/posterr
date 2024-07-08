@@ -14,7 +14,7 @@ class Post < ApplicationRecord
         user_id,
         created_at,
         n_reposts,
-        FALSE as is_repost,
+        FALSE as repost,
         NULL as reposter_id}
       ),
       Repost.all.joins(:post).select(
@@ -23,7 +23,7 @@ class Post < ApplicationRecord
         posts.user_id,
         reposts.created_at,
         posts.n_reposts,
-        TRUE as is_repost,
+        TRUE as repost,
         reposts.user_id as reposter_id}
       )
     )

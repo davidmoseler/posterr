@@ -18,7 +18,7 @@ class PostFeed
   end
 
   def original
-    PostFeed.new @query.where(is_repost: false)
+    PostFeed.new @query.where(repost: false)
   end
 
   def execute

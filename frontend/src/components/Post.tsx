@@ -24,7 +24,7 @@ const Post = ({ post }: { post: TPost }) => {
 
   return (
     <div className="post border-b border-gray-200 p-4">
-      {post.is_repost ? (
+      {post.repost ? (
         <p>{getUserName(post.reposter_id) + ' reposted'}</p>
       ) : (
         <></>
@@ -34,7 +34,7 @@ const Post = ({ post }: { post: TPost }) => {
         <span className="pl-3 text-gray-400">{post.created_at.split('T')[0]}</span>
       </h2>
       <p>{post.content}</p>
-      {post.is_repost ? (
+      {post.repost ? (
         <></>
       ) : (
         <button data-testid="repost" onClick={() => repost()}>
