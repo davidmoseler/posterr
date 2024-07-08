@@ -29,7 +29,10 @@ const Post = ({ post }: { post: TPost }) => {
       ) : (
         <></>
       )}
-      <h2 className="font-bold">{getUserName(post.user_id)}</h2>
+      <h2>
+        <span className="font-bold">{getUserName(post.user_id)}</span>
+        <span className="pl-3 text-gray-400">{post.created_at.split('T')[0]}</span>
+      </h2>
       <p>{post.content}</p>
       {post.is_repost ? (
         <></>
