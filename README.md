@@ -54,11 +54,11 @@ In order to run the end to end tests, stop the current application through runni
 
 Now you can go to the frontend folder and run npx cypress open.
 
+If you run into problems with Cypress, try doing sudo chmod +777 -R on the node_modules folder and running npm install locally before running Cypress.
+
 ####Note:
 
 I'd like to setup Cypress so that it runs entirely in a docker container like everything else, but the Cypress GUI integrates with the system is such a way that I couldn't find a reliable way to do that given the time constraints. It seems that the solution is also dependent on the developer host, so that would maybe not be advisable for me to do here, and I think that whoever will be reviewing this project will find it neat to watch the tests running through the browser GUI.
-
-If you run into problems with Cypress, try doing sudo chmod +777 -R on the node_modules folder and running npm install locally before running Cypress.
 
 ## Utility commands
 
@@ -435,13 +435,13 @@ An issue with cypress scrollTo prevented me from implementing a test for the inf
 
 ## Critique
 
-- This is a big one: I didn't have the time to write comments. I'm so sorry. I worked more heavily on the README and thought I would have spare time to add comments after all, but I didn't. I should have written comments while I was developing.
+- I wanted to make the post input textarea expand. This is a little bit tricky, and unfortunately the new css field-sizing field is not available in Tailwind or React yet. I would tackle this anyway if I had more time.
 
 - I didn't make a responsive layout. That would be the first thing I would tackle if I had more time.
 
 - The frontend tests are not as comprehensive as the backend and end to end tests. A lot was done to allow tests to be developed with good practices, but that could be used more.
 
-- The UI can improve.
+- The UI can improve. For example, I wish I had added simple hover animations to the buttons.
 
 - Think about localization issues. The "5 posts in one day" rule, together with time constraints, made me think it is better for the frontnend to share the backend post date, as to be transparent to the user. That, of course, is not acceptable in production, and a discussion should be had regarding requirements. Maybe "5 posts in one day" should be "5 posts in every 24 hours", for example.
 
