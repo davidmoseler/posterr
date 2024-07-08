@@ -75,11 +75,13 @@ beforeEach(() => {
         hasNextPage,
         isFetching,
         isFetchingNextPage,
-        useCreatePost,
       }),
       Post: () => ({
         users,
         repost
+      }),
+      PostBuilder: () => ({
+        useCreatePost,
       })
     },
     resolve(identifier: string) {

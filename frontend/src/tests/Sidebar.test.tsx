@@ -5,7 +5,6 @@ import '@testing-library/jest-dom';
 import { ContainerProvider } from '../dependencyContainer';
 import Sidebar from '../components/Sidebar';
 import TUser from '../types/user';
-import { current } from '@reduxjs/toolkit';
 
 let users: TUser[];
 let currentUser: string;
