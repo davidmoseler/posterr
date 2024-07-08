@@ -1,3 +1,9 @@
+/*
+  Abstracts away the interface to the backend from the rest of the React application. This
+    provides a group of hooks that can be used by React components. These hooks provide backend
+    data and mutation methods to the components.
+*/
+
 import { useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import fetchWrapper, {onError} from './fetchWrapper';
 

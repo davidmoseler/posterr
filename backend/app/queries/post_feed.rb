@@ -1,3 +1,37 @@
+<<-DOC
+
+Many ORMs implement a query interface. ActiveRecord is no exception.
+
+ActiveRecord Queries are a useful way to provide separation of concerns without sacrificing
+  performance. They are used to build a database query, step by step, in higher layers, and only
+  perform the actual database query in the end.
+
+The query interface allows us to define certain operations at the lower Data Access Layer levels,
+  and make those semantic operations available to higher layers, where they can be organized
+  according to business rules.
+
+The essential aspect of the implementation of the query interface is the commutative
+  composability of the operations, which is achieved by the query having methods that return
+  another query with the exact same interface.
+
+PostFeed is a query that represents the posts feed. This is the interface:
+
+```
+    def original; end; => feed
+    def latest; end; => feed
+    def trending; end; => feed
+    def search(search_term); end; => feed
+    def page(page); end; => feed
+```
+
+All the methods defined on feed return a feed, so that all operations are composable and
+  commutative.
+
+On top of that interface expected by the Service Layer, all of the ActiveRecord query methods
+  are also available on feed instances.
+
+DOC
+
 class PostFeed
   def initialize(query)
     @query = query

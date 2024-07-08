@@ -7,6 +7,10 @@ class Post < ApplicationRecord
   scope :today, lambda { where('DATE(created_at) = ?', Date.today)}
 
   def self.feed
+    # This method implements the actual query used to generate the PostFeed. It uses the
+    #   active_record_extended gem to be able to actually create a union query. Both posts
+    #   and reposts are presented in a uniform format and the repost column indicates wheter
+    #   it is a repost or not.
     PostFeed.new union(
       Post.all.select(
         %{posts.id as post_id,
@@ -30,6 +34,8 @@ class Post < ApplicationRecord
   end
 
   def self.new_repost(*args)
+    # Wrapper to hide from the Service Layer the fact that reposts are implemented as a
+    #  separate class
     Repost.new *args
   end
 

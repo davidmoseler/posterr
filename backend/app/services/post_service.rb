@@ -1,3 +1,53 @@
+<<-DOC
+
+The PostService can be instantiated with a user, like this:
+
+```
+    post_service = PostService.new(@user)
+```
+
+Then, it exposes four methods:
+
+```
+    post_service.create_post(content)
+    post_service.get_posts(page, search_term, sorting)
+    post_service.n_posts(search_term, sorting)
+    post_service.repost(post)
+```
+
+Both create_post and repost will do those actions on behalf of the user that was used before to
+  instantiate the post services. Right now, get_posts doesn't change based on the user, but the
+  service has been designed this way to anticipate the fact that, in the hypothetical future
+  development of the platform, different users would probably see different feeds, so that all
+  three methods are subject to the same "Point of View" context: the user.
+
+Both post and user are only required to implement very minimal. Those interfaces, together,
+represent the interface between the Service Layer and Data Access Layer.
+
+This is what "Post" should implement:
+
+```
+    def self.new(content, user); end; => post
+    def self.new_repost(post, user); end; => post
+    def self.feed; end; => feed
+    def save!; end;
+    def user; end; => user
+    def is_repost; end; => bool
+```
+
+And what "User" should implement:
+
+```
+    def posts_today; end; => post[]
+```
+
+Here, => indicates the return type and eg. post[] is a *query* of posts (not an array!).
+  Capitalized (eg Post) means the class and lowercase (eg post) means an instance.
+
+The "feed" type implements a Query Interface, as described in post_feed.rb.
+
+DOC
+
 class PostService
   def initialize(user)
     @user = user
