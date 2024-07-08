@@ -2,7 +2,7 @@ class Repost < ApplicationRecord
   belongs_to :user
   belongs_to :post, inverse_of: :reposts
 
-  def save
+  def save!
     # Make sure the n_reposts counter is updated on the post being reposted.
     Repost.transaction do
       super
