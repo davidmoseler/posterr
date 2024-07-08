@@ -2,11 +2,16 @@
 
 Make sure you have a nice markup visualization tool for following this readme.
 
+The platform was written with Rails in the backend (api-only), PostgreSQL as the database, and React + Tailwindcss in the frontend. React Query has been used for the api communication, and Redux for frontend-only state.
+
 ## Installation
 
 You need to have docker composer installed in your system. Then, you can run the app by simply doing
 
 ```
+    cp .env_example .env
+    docker compose run rake db:create
+    docker compose run rake db:migrate
     docker compose run rake db:seed
     docker compose up
 ```
@@ -52,6 +57,8 @@ Now you can go to the frontend folder and run npx cypress open.
 ####Note:
 
 I'd like to setup Cypress so that it runs entirely in a docker container like everything else, but the Cypress GUI integrates with the system is such a way that I couldn't find a reliable way to do that given the time constraints. It seems that the solution is also dependent on the developer host, so that would maybe not be advisable for me to do here, and I think that whoever will be reviewing this project will find it neat to watch the tests running through the browser GUI.
+
+If you run into problems with Cypress, try doing sudo chmod +777 -R on the node_modules folder and running npm install locally before running Cypress.
 
 ## Utility commands
 
@@ -225,7 +232,7 @@ Again, "PostFeed" is an implementation detail at the Data Access layer and, as f
 
 The Post.feed method has the actual query used to generate this PostFeed. It uses the active_record_extended gem to be able to actually create a union query.
 
-I'll talk more about database performance later.
+Indices have been added to the database so that this query is performant for any combination of sorts and filters.
 
 ### The Backend Presentation Layer
 
@@ -239,6 +246,8 @@ The Presentation Layer is pretty simple, it exposes the services and handles req
 
     POST post/repost : (user_id, post_id)
 ```
+
+I took the care to make sure the controllers handle exceptions and return a response with the properly crafted http status error.
 
 ### The Frontend Repositories
 
@@ -420,13 +429,24 @@ The only thing that is actually mocked is the IntersectionObserver library, whic
 
 ### End to end
 
+The end to end tests don't test every single business rule, but they do a significant job of detecting any issue with any piece of the platform. They test most of the macro requirements and, of course, every piece needs to work together in order for them to pass.
+
+An issue with cypress scrollTo prevented me from implementing a test for the infinite scrolling. I don't want to spend too much time on debugging this because this is a test project, but I would focus one hour on that if this was a real project. After running all the cypress tests, you can access the frontend at localhost:3000 and see a state of the platform with 20 posts (the most you can do with 4 users in one day) and test it manually.
+
 ## Critique
+
+- This is a big one: I didn't have the time to write comments. I'm so sorry. I worked more heavily on the README and thought I would have spare time to add comments after all, but I didn't. I should have written comments while I was developing.
 
 - I didn't make a responsive layout. That would be the first thing I would tackle if I had more time.
 
-- The frontend and end to end tests are not as comprehensive as the backend tests. A lot was done to allow tests to be developed with good practices, but that could be used more.
+- The frontend tests are not as comprehensive as the backend and end to end tests. A lot was done to allow tests to be developed with good practices, but that could be used more.
 
-- The UI can improve
+- The UI can improve.
+
+- Think about localization issues. The "5 posts in one day" rule, together with time constraints, made me think it is better for the frontnend to share the backend post date, as to be transparent to the user. That, of course, is not acceptable in production, and a discussion should be had regarding requirements. Maybe "5 posts in one day" should be "5 posts in every 24 hours", for example.
+
+- In my experience during this project, Redux has some downsides. For example, the Redux dispatch method doesn't accept a callback (unless extensions are installed), and I had to listen in the Feed component for changes on the search and sorting parameters through my custom useOnChange hook in order to invalidate the query cache. This doesn't feel good: global state should be handled globally. In hindisght, I realize that, since useQuery works with any async method (and a sync method can be made async), it would be cool to experiment with the idea of React Query handling all state, taking advantage of the symmetry mentioned earlier and removing Redux.
+
 
 ### On scaling:
 
