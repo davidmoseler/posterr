@@ -55,7 +55,11 @@ class PostService
 
   def create_post(content)
     check_allowed
+    begin
     save_post(Post.new content: content, user: @user)
+    rescue ActiveRecord::RecordInvalid => e
+      raise PostServiceException::PostValidationFailed.new(e.message)
+    end
   end
 
   def get_posts(page, search_term: nil, sorting: "latest", base_query: base_query())
@@ -167,4 +171,7 @@ class PostServiceException::DoubleRepost < Exception
   def initialize(msg="You already reposted this post")
     super
   end
+end
+
+class PostServiceException::PostValidationFailed < Exception
 end

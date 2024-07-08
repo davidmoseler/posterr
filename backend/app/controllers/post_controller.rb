@@ -11,6 +11,10 @@ class PostController < ApplicationController
       render :json => {
         exception: error.exception
       }, status: 429
+    rescue PostServiceException::PostValidationFailed => error
+      render :json => {
+        exception: error.exception
+      }, status: 422
     end
   end
 
