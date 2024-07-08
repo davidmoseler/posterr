@@ -32,7 +32,9 @@ const PostBuilder = () => {
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      createPost();
+      if(newPostContent != '') {
+        createPost();
+      }
     }
   };
 
@@ -54,7 +56,9 @@ const PostBuilder = () => {
             ' text-white w-16 h-9 rounded-3xl'
           }
           onClick={() => {
-            createPost();
+            if(newPostContent != '') {
+              createPost();
+            }
           }}
         >
           Post
