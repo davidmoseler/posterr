@@ -30,6 +30,8 @@ describe('home page', () => {
 
     cy.get('.post:contains("John Doe created a new post")').find('[data-testid="repost"]').click();
 
+    cy.get('#confirmation-modal').find('button:contains("Yes")').click()
+
     cy.get('.post:contains("John Doe created a new post")').eq(0).contains('reposted')
   })
 
@@ -60,9 +62,13 @@ describe('home page', () => {
 
     cy.get('.post:contains("Cypress created a new post")').find('[data-testid="repost"]').click();
 
+    cy.get('#confirmation-modal').find('button:contains("Yes")').click()
+
     cy.get('button:contains("Sheila Doe")').click();
 
     cy.get('.post:contains("Cypress created a new post")').find('[data-testid="repost"]').click();
+
+    cy.get('#confirmation-modal').find('button:contains("Yes")').click()
 
     cy.get('button:contains("Trending")').click();
 

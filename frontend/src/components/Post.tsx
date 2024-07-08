@@ -61,6 +61,7 @@ const Post = ({ post }: { post: TPost }) => {
         </button>
       )}
       <Modal
+        id="confirmation-modal"
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
         contentLabel="Confirm Repost"

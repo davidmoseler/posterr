@@ -62,6 +62,8 @@ describe('loads and displays post', () => {
 
     await userEvent.click(screen.getByTestId('repost'));
 
+    await userEvent.click(screen.getByText('Yes'));
+
     expect(repost).toHaveBeenCalled();
   });
 
